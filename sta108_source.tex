@@ -1,0 +1,860 @@
+\documentclass[10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.5in, a4paper, landscape]{geometry}
+\usepackage{amsmath}
+\usepackage{blindtext}
+\usepackage{multicol}
+\usepackage[x11names]{xcolor}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parindent}{0pt}
+
+\newcommand{\hlDef}[1]{\colorbox{Thistle2}{#1}}
+\newcommand{\hlEmph}[1]{\colorbox{DarkSeaGreen2}{#1}}
+
+\begin{document}
+\begin{multicols}{3}
+
+    \fbox{\parbox{2.8in}{
+            \textbf{STA 108 Notes - J. Jiang}\\
+            \textbf{Dylan M Ang}\\
+            \textbf{\today}
+        }}
+
+
+    \tableofcontents
+
+    \section[Simple Linear Regression]{Simple Linear \\Regression}
+
+    \begin{equation}\label{eq: simple linear regression}
+        Y_i = \beta_0 + \beta_1 x_i + \epsilon_i \quad i = 1\dots n
+    \end{equation}
+
+    If assumptions hold true,
+
+    \begin{itemize}
+        \item $Y_i$ is normally distributed
+              \begin{align}
+                  E(Y_i)   & = \beta_0 + \beta_1 x_i \\
+                  Var(Y_i) & = \sigma^2
+              \end{align}
+        \item Mean: $\beta_0 + \beta_1 x_i$
+        \item Variance: $\sigma^2$
+    \end{itemize}
+
+
+    \paragraph{Assumptions}
+
+    \begin{itemize}
+        \item $\epsilon_1 \dots \epsilon_n$
+        \item $E(\epsilon_i) = 0, var(\epsilon_i)=0$, where $\sigma^2$ is an unknown constant.
+        \item $\epsilon_i$ is normal. (normality assumption)
+    \end{itemize}
+
+    \subsection{Least Squares Estimate}
+
+    \begin{equation}\label{eq: LS estimate}
+        \Sigma_{i=1}^{n} (Y_i - \beta_0 - \beta_1 x_i)^2
+    \end{equation}
+
+    Take the first order derivative with respect to $\beta_0, \beta_1$ to \hlEmph{minimize} equation (\ref{eq: LS estimate}) to find optimal $\beta_0, \beta_1$.
+
+    \paragraph{LS estimators}
+
+    \begin{align}\label{eq: beta LS estimate}
+        \hat \beta_1 & = \frac{\Sigma_{i=1}^{n}(x_i - \bar x)(Y_i - \bar Y)}{\Sigma_{i=1}^{n} (x_i - \bar x)^2} \\
+        \hat \beta_0 & = \bar Y - \hat \beta_1 \bar x
+    \end{align}
+
+    \begin{itemize}
+        \item $\bar x = \frac{1}{n} \Sigma_{i=1}^{n} x_i$ (sample mean of the $x_i$'s)
+        \item $\bar Y = \frac{1}{n} \Sigma_{i=1}^{n} Y_i$ (sample mean of the $Y_i$'s)
+        \item Regression Line: $y = \hat \beta_0 + \hat \beta_1 x$
+    \end{itemize}
+
+    \paragraph{Properties of LS Estimators}
+    \begin{itemize}
+        \item $E(\hat \beta_0) = \beta_0$, $E(\hat\beta_1) = \beta_1$. The average of many sample beta values will approach the true beta values.
+    \end{itemize}
+
+    \hlDef{Fitted} (or predicted) values are estimates. The fitted value for $Y_i$ is $\hat Y_i = \hat\beta_0 + \hat\beta_1x_i$
+
+    $\hat Y$ is an \hlDef{unbiased estimator} of $E(Y) = \beta_0 + \beta_1 x$ so $E(\hat Y) = E(Y)$
+
+    \vspace{10px}
+
+    \subsection{Residuals}
+
+    \hlDef{Residuals}: $\hat\epsilon_i = Y_i - \hat Y_i, i=1\dots n$
+
+    Properties of Residuals
+
+    \begin{itemize}
+        \item $\Sigma_{i=1}^{n} \hat\epsilon_i = 0$
+        \item The residuals are not independent.
+        \item If one residual is positive, another residual has to compensate.
+    \end{itemize}
+
+
+
+    \subsection{Variance}
+
+    Estimation of $\sigma^2$, the variance of the errors (which is the same as the variance of $Y_i$)
+
+    \begin{equation}\label{eq: sample variance}
+        s^2 = \frac{1}{n-2} \Sigma_{i=1}^{n} (Y_i - \hat Y_i)^2
+    \end{equation}
+
+    where $\hat Y_i$ is the estimate of $E(Y_i)$.
+
+    \paragraph{Notes}
+
+    \begin{itemize}
+        \item $\hat Y_i$ is an estimator of $E(Y_i) = \beta_0 + \beta_1 x_i$ in which two parameters are estimated ($\beta_0$  and $\beta_1$) $\implies$ 2 degrees of freedoms are subtracted.
+        \item $E(s^2) = \sigma^2$
+    \end{itemize}
+
+    When errors are normally distributed, the LS estimators of $\beta_0, \beta_1$ is equal to the MLEs (Maximum Likelihood Estimators) of $\beta_0, \beta_1$, but the MLE of $\sigma^2, \hat\sigma^2$, is different from $s^2$
+
+    $s^2$ is just (\ref{eq: sample variance})
+
+    \begin{equation}
+        \hat\sigma^2 = \frac{1}{n} \Sigma_{i=1}^n \hat\epsilon_i^2
+    \end{equation}
+
+
+
+    \section{Inference in regression and correlation analysis}
+
+    \subsection[Inference about beta 1]{Inference about $\beta_1$}
+
+    \textbf{For testing $\beta_1$}
+
+    $H_0: \beta_1 = \beta_{10}, \beta_{10}$ is a given value such as 0.
+
+    $H_a: \beta_1 \ne \beta_{10}, \beta_1 > \beta_{10}, \text{ or } \beta_1 < \beta_{10}$
+
+    \hlDef{Test statistic}: A statistic whose distribution is known \hlEmph{under the null hypothesis.}
+
+    \begin{equation}\label{eq: t for beta 1}
+        t = \frac{\hat\beta_1 - \beta_{10}}{s.e.(\hat\beta_1)}
+    \end{equation}
+
+    where $\hat\beta_1$ is the LS estimate of $\beta_1$, and
+
+    \begin{align}\label{eq: se of beta 1}
+        s.e.(\hat\beta_1) & = \sqrt{\frac{MSE}{\Sigma_i (x_i - \bar x)^2}} \\
+        MSE               & = s^2
+    \end{align}
+
+    If normal, $T \sim t_{n-1}$
+
+    \begin{equation}
+        T = \frac{\hat\beta_1 - \beta_1}{s.e.(\hat\beta_1)}
+    \end{equation}
+
+    Therefore under the $H_0: \beta_1 = \beta_{10}, t \sim t_{n-2}$
+
+    \textbf{Decision Rules}
+
+    \begin{align*}
+        H_1: \beta_1 \ne \beta_{10}, & \; reject \; H_0 \; if \;  |t| > t_{n-2, \alpha/2} \\
+        H_1: \beta_1 > \beta_{10},   & \; reject \; H_0 \; if \; |t| > t_{n-2; \alpha}    \\
+        H_1: \beta_1 < \beta_{10},   & \; reject \; H_0 \; if \; |t| < -t_{n-2; \alpha}
+    \end{align*}
+
+    Alternatively, Reject $H_0$ if the p-value of t is $\leq \alpha$
+
+    \textbf{Error}
+
+    \begin{itemize}
+        \item \hlDef{Type I}: Reject $H_0$ when it is true.
+        \item \hlDef{Type II}: Fail to reject $H_0$ when it is false.
+    \end{itemize}
+
+    \textbf{Level of Significance $\alpha$}
+
+    \hlDef{$\alpha$} is the upper bound for the probability of Type I error.
+
+    \textbf{P-value}
+
+    \hlDef{p-value} is the observed level of significance: the actual probability that the test statistic is as extreme as observed given $H_0$ is true.
+
+    \textbf{Power}
+
+    \hlDef{Power} is the probability of rejecting $H_0$ when the alternative holds at a given value.
+
+    If $\beta_{10} = 0, \beta_1 = 1, s.d.(\hat\beta_1) = 0.5$, we have $\delta = \frac{1}{0.5} = 2$ Let $\alpha= 0.05$. From table B.5 we find the power is 0.48.
+
+    \textbf{Confidence interval for $\beta_k$}
+
+    Assuming normality, a $100(1-\alpha)\%$ c.i. for $\beta_k$ is
+
+    \begin{align}\label{eq: CI for beta k}
+        \hat\beta_k \pm t_{n-2} (1 - \frac{alpha}{2} * s.e.(\hat\beta_)) \\
+        k = 0,1
+    \end{align}
+
+    where $s.e.(\hat\beta_1)$ can be found with eq(\ref{eq: se of beta 1}) and $s.e.(\hat\beta_0)$ can be found with eq(\ref{eq: se of beta 0}).
+
+
+
+    \subsection[Inference about beta 0]{Inference about $\beta_0$}
+
+    \begin{equation}\label{eq: se of beta 0}
+        s.e.(\beta_0) = \sqrt{mse( \frac{1}{n} + \frac{\bar x^2}{\Sigma_{i=1}^n (x_i - \bar x)^2} )}
+    \end{equation}
+
+    \hlEmph{Confidence intervals} for $\beta_0$ can be found with (\ref{eq: CI for beta k})
+
+    \subsection[Inference about sample Y]{Inference about $\hat Y$}
+
+    \hlEmph{Confidence Interval for $E(Y) = \beta_0 + \beta_1 x$}
+
+    \begin{align}\label{eq: ci for sample Y}
+        \hat Y \pm t_{n-2} (1 - \frac{alpha}{2}) * s.e.(\hat Y) \\
+        s.e.(\hat Y) = \sqrt{MSE ( \frac{1}{n} + \frac{(x-\bar x)^2}{\Sigma_{i=1}^n (x_i - \bar x)^2} )}
+    \end{align}
+
+    \subsection[Prediction interval for sample Y]{Prediction interval for $\hat Y$}
+
+    A $100(1-\alpha)\%$ prediction interval for $Y=E(Y) + \epsilon = \beta_0 + \beta_1 x + \epsilon$, where Y is the future observation and $\epsilon$ is the new error:
+
+    \begin{align} \label{eq: pi for Y}
+        \hat Y \pm t_{n-2} ( 1 - \frac{\alpha}{2} ) * p.s.e.(\hat Y) \\
+        p.s.e.(\hat Y) = \sqrt{MSE( 1 + \frac{1}{n} + \frac{ (x - \bar x)^2 }{\Sigma_{i=1}^n (x_i - \bar x)^2 } )}
+    \end{align}
+
+    Where p.s.e. is the percent standard error.
+
+    The 1 in the p.s.e is because the variance of $\epsilon = \sigma^2$. If $var(\epsilon) = \frac{\sigma^2}{2}$ change the 1 to $\frac{1}{2}$.
+
+    \subsection{ANOVA and F-test}
+
+    \begin{align}\label{eq: SSTO}
+        SSTO & = SSR + SSE                            \\
+             & = \Sigma_{i=1}^n (Y_i - \bar Y)^2      \\
+        SSR  & = \Sigma_{i=1}^n (\hat Y_i - \bar Y)^2 \\
+        SSE  & = \Sigma_{i=1}^n (Y_i - \hat Y)^2      \\
+    \end{align}
+
+    Sum of Squares of Regression (SSR) explains the variability in $Y$ due to the regression model compared to the baseline model.
+    Sum of Squares of Errors (SSE) is the remaining unexplained variability of Y found from SSTO - SSR.
+
+    \textbf{Degrees of Freedom}
+
+    \begin{align*}
+        SSR  & df = 1                 \\
+        SSE  & df = n - 2             \\
+        SSTO & df = n - 2 + 1 = n - 1 \\
+    \end{align*}
+
+    \textbf{Mean Squares}
+
+    Mean squares is SS divided by its degrees of freedom.
+
+    \begin{align}
+        MSR & = \frac{SSR}{1}   \\
+        MSE & = \frac{SSE}{n-2} \\
+    \end{align}
+
+    \textbf{F-Statistic}
+
+    \begin{equation}\label{eq: f stat}
+        F = \frac{MSR}{MSE} = \frac{SSR * (n-2)}{SSE}
+    \end{equation}
+
+    \hlDef{ANOVA table}: Analysis of variance.
+
+    The distribution of F under the null hypothesis $H_0: \beta_1 = 0$ is $F_{1, n-2}$.
+
+    \begin{tabular}{l l l l l}
+        Source     & SS   & df  & MS  & F \\ \hline
+        Regression & SSR  & 1   & MSR & F \\
+        Error      & SSE  & n-2 & MSE &   \\
+        Total      & SSTO & n-1 &     &   \\
+    \end{tabular}
+
+    \subsection[Inference about correlation]{Inference about $\rho$}
+
+    \hlDef{$R^2$}: a measure of goodness of fit, which is the proportion of variation in $Y$ explained by the regression (i.e. by x).
+
+    \begin{equation}\label{eq: R square}
+        R^2 = \frac{SSR}{SSTO} = 1 - \frac{SSE}{SSTO}
+    \end{equation}
+
+    Coefficient of correlation:
+
+    \begin{equation}\label{eq: sample r}
+        r = \pm \sqrt{R^2} = \begin{cases}
+            +\sqrt{R^2} & if \; \hat\beta_1 > 0 \\
+            -\sqrt{R^2} & if \; \hat\beta_1 < 0
+        \end{cases}
+    \end{equation}
+
+    \begin{equation}\label{eq: sample r (alt)}
+        r = \frac{\Sigma_i (Y_i - \bar Y) (x_i - \bar x) }{\sqrt{\Sigma_i (Y_i - \bar Y)^2 \Sigma_i (x_i - \bar x)^2}}
+    \end{equation}
+
+    \textbf{Properties of $R^2$ and $r$}
+
+    \begin{itemize}
+        \item $0 \leq R^2 \leq 1 \quad -1 \leq r \leq 1$
+        \item $R^2 \approx 1$ or $r \approx \pm 1$, if there is a strong linear association between $x$ and $Y$.
+        \item $R^2 \approx 0$, or $r \approx 0$, if there is a weak or no linear association between $x$ and $Y$.
+        \item Both $R^2$ and $r$ are measures of linear association only.
+    \end{itemize}
+
+    \textbf{Covariance and correlation between two random variables}
+
+    \begin{align}
+        cov(X, Y) & = E\{ (X - \mu_X) (Y - \mu_Y) \} \\
+                  & = E(XY) - E(X)E(Y)               \\
+        cor(X, Y) & = \frac{cov(X, Y)}{sd(X)sd(Y)}
+    \end{align}
+
+    where $\mu_X = E(X), sd(X) = \sqrt{var(X)}$,etc.
+
+    Special case: $(X,Y)$ has a bivariate normal distribution.
+
+    \textbf{Testing for $\rho$}
+
+    Assume that the bivariate normal distribution holds for $(X,Y)$.
+
+    $H_0: \rho = 0$
+
+    $H_a: \rho \ne 0 (\;or\; \rho > 0 \;or\; \rho < 0)$
+
+    \begin{eqnarray}\label{eq: t statistic for rho}
+        t^* = \frac{r\sqrt{n-2}}{\sqrt{1-r^2}} \sim t_{n-2} \text{ under } H_0
+    \end{eqnarray}
+
+    \section{Diagnostics}
+
+    The goal of diagnostics is to examine the departures from the simple linear regression model with normal errors. Typical departures and corresponding diagnostic plots/tests are:
+
+    \begin{itemize}
+        \item The regression is not \hlEmph{linear} - residual plots(residual against the predictor variable, or against the fitted values), lack of fit test.
+        \item The error terms are not \hlEmph{normally} distributed - histogram, boxplot/dot plot of residuals, normal probability plot (aka QQ plot), Shapiro-Wilk's test, correlation test for normality.
+        \item The error terms do not have \hlEmph{constant variance} - residual plots, Brown - Forsythe (BF) test.
+        \item The error terms are not \hlEmph{independent} - residual against time.
+        \item The model fits all but one or a few \hlEmph{outlier} observations - (semistudentized) residual plots, box plots, dot plots, stem and leaf plots.
+        \item Some important \hlEmph{predictors are missing} - residual plots (residual against other possibly important predictors).
+    \end{itemize}
+
+    \subsection{Residual Plots}
+
+    Residuals can be used to check whether
+    \begin{itemize}
+        \item The regression function is not linear.
+        \item The variance of the errors is not constant.
+        \item The errors are not independent.
+        \item Outliers
+        \item The errors are not normal.
+        \item Some important predictors are missing.
+    \end{itemize}
+
+    \textbf{Scatter Plot}
+    \begin{itemize}
+        \item Check \hlEmph{linearity} - residuals normally disributed.
+        \item Check \hlEmph{constant variance} - residuals are random and dont follow a cone pattern.
+    \end{itemize}
+
+    \textbf{Box Plot and Dot Plot}
+    \begin{itemize}
+        \item Normality - residuals should be centered and symmetric about 0.
+    \end{itemize}
+
+    \textbf{Normality probability plot - QQ Plot}
+    \begin{itemize}
+        \item QQ plot is linear $\implies$ normal residuals.
+        \item QQ plot is nonlinear $\implies$ non normal residuals.
+    \end{itemize}
+
+    \subsection{Diagnostic Tests}
+
+    \textbf{Shapiro Wilk's test}
+
+    $H_0 \; data \; \sim N()$
+
+    $H_a:$ data not normal.
+
+    $p-val \leq \alpha$ reject normality assumption.
+
+    \textbf{Correlation test for normality}
+
+    Step 1. Compute the coefficient of correlation between the ordered residuals and their expected values. The latter are given by
+
+    \begin{equation}
+        \sqrt{MSE} z(\frac{k - 0.375}{n + 0.25}), \quad k = 1,\dots,n
+    \end{equation}
+
+    where $z(p)$ is the pth quantile of the standard normal distribution, that is, $P[Z \leq z(p)] = p$,
+    where $Z$ has the standard normal distribution.
+
+    Step 2. Compare the coefficient of correlation on I with the critical value from Table B.6, if the
+    coefficient of correlation exceeds the critical value, accept the normality assumption.
+
+    \textbf{BF test for constant variance}
+
+    1. Divide the residuals into two parts according to residual pattern (or no pattern)
+
+    Let $\hat\epsilon_{i1} = 1, \dots, n_1$ be the residuals for the first part, and
+    $\hat\epsilon_{i2}, i = 1, \dots, n_2$ be the residuals for the second part,
+    where $n_1 + n_2 = n$.
+
+    Compute $m(\hat\epsilon_1) = \;median\; of\; \hat\epsilon_{i1}, i = 1,\dots,n_1$ and $m(\hat\epsilon_2)$.
+
+    2. Compute $d_{i1} = |\hat\epsilon_{i1} - m(\hat\epsilon_{1})|, i = 1\dots n_1$ and
+    $d_{i2} = |\hat\epsilon_{i2} - m(\hat\epsilon_{2})|, i = 1\dots n_2$
+
+    3. Compute t score.
+
+    \begin{equation}\label{t score for BF test}
+        t_{BF} = \frac{\bar d_1 - \bar d_2}{s \sqrt {n_1^{-1} + n_2^{-1} } }
+    \end{equation}
+
+    \begin{equation}\label{variance for BF test}
+        s^2 = \frac{\Sigma_{i=1}^{n_1} (d_{i1} - \bar d_{1})^2 + \Sigma_{i=1}^{n_2} (d_{i2} - \bar d_{2})^2}{n - 2}
+    \end{equation}
+
+    4. Test $H_0: \sigma_1^2 = \sigma_2^2$ vs $H_a: \sigma_1^2 \ne \sigma_2^2$
+
+    $t_{BF} \sim t_{n-2}$ under $H_0$. Given $\alpha$, use the critical value (or p-value) to test $H_0$.
+
+    \textbf{F-test for lack of fit}
+
+    Regression model: $Y_{ij} = \beta_0 + \beta_1 x_j + \epsilon_{ij}, j = 1\dots c, i = 1\dots n_j$
+    where $x_j$ is the $jth$ value of $x$, $c$ is the number of different $x$ values, and
+    $Y_{ij}, i = 1\dots n_j$ are the Y values corresponding to the same $x_j$.
+
+    Full model: $Y_{ij} = \mu_j + \epsilon_{ij}, j = 1 \dots c, i = 1 \dots n_j$
+
+    F-statistic:
+
+    \begin{equation}\label{F statistic}
+        F = \frac{SSE(R) - SSE(F)}{df_R - df_F} \{\frac{SSE(F)}{df_F}\}^{-1}
+    \end{equation}
+
+    where
+
+    \begin{align}
+        SSE(R) & = \Sigma_j \Sigma_i (Y_{ij} - \hat Y_{ij})^2 \\
+        SSE(F) & = \Sigma_j \Sigma_i (Y_{ij} - \hat \mu_j)^2
+    \end{align}
+
+    with $\hat Y_{ij} = \hat\beta_0 + \hat\beta_1 x_j$
+    and $\hat \mu_j = \bar Y_j - n_j^{-1} \Sigma_{i=1}^{n_j} Y_{ij}, df_R = n-2$ with $n = \Sigma_{j=1}^c n_j$ and $df_F = n-c$.
+
+    Under $H_0:$ The assumed model is correct, $F\sim F_{c-2, n-c}$.
+
+    \subsection{Remedial Measures}
+
+    \textbf{Transformation of x}: for nonlinear association.
+
+    \textbf{Transformation of Y}: for nonnormality/unequal variance.
+
+    \textbf{Box Cox transformation}
+
+    This is a collection of transformations depending on a ``tuning parameter'', $\lambda$.
+
+    \begin{equation}
+        Y'_i = \begin{cases}
+            K_1 (Y_i^\lambda - 1), & \lambda \ne 0 \\
+            K_2 log(Y_i),          & \lambda = 0
+        \end{cases}
+    \end{equation}
+
+    where $K_1, K_2$ are two numbers computed from the data.
+
+    \begin{align}
+        K_2 & = (Y_1 Y_2 \dots Y_n)^{\frac{1}{n}} = e^{ \overline{\log Y} } \\
+        K_1 & = \frac{1}{\lambda K_2^{\lambda - 1}}
+    \end{align}
+
+    \section{Simultaneous Inference}
+
+    \subsection{Simultaneous Confidence Intervals}
+
+    An SCI represents the percentage likelihood that a group of confidence intervals will all include the true population parameters or true differences between factor levels if the study were repeated multiple times.
+
+    SCI's for $E(Y_h) = \beta_0 + \beta_1 x_h, h \in G, g = |G|$
+
+    A $100(1 - \alpha)\%$ s.c.i has the following form,
+
+    \begin{align}
+         & \text{Working-Hotelling's} & \hat Y_h \pm W * se(\hat Y_h) \\
+         & \text{Bonferroni's}        & \hat Y_h \pm B * se(\hat Y_h)
+    \end{align}
+
+    Where,
+
+    \begin{align}\label{SCI SE}
+        se(\hat Y_h) & = \sqrt{MSE \left(\frac{1}{n} + \frac{ (x_h - \bar x)^2 }{ \Sigma_i (x_i - \bar x)^2 } \right)} \\
+        \label{Working W}
+        W            & = \sqrt{2 * F_{2, n - 2} (1 - \alpha)}                                                          \\
+        \label{Bonferroni B}
+        B            & = t_{n - 2} \left( 1 - \frac{\alpha}{2g} \right)
+    \end{align}
+
+    \subsection{Simultaneous Prediction Intervals}
+
+    The goal of a prediction band is to cover with a prescribed probability the values of one or more future observations from the same population from which a given data set was sampled. Just as prediction intervals are wider than confidence intervals, prediction bands will be wider than confidence bands.
+
+    \begin{align}
+         & \text{Bonferroni's} & \hat Y_h \pm B * pse(\hat Y_h) \\
+         & \text{Scheffe's}    & \hat Y_h \pm S * pse(\hat Y_h)
+    \end{align}
+
+    where $B = (\ref{Bonferroni B})$
+
+    \begin{align}
+        pse(\hat Y_h) & = \sqrt{MSE \left(1 + \frac{1}{n} + \frac{ (x_h - \bar x)^2 }{ \Sigma_i (x_i - \bar x)^2 } \right)} \\
+        S             & = \sqrt{g F_{g, n -2} (1 - \alpha) }                                                                \\
+    \end{align}
+
+    \section{Multiple Linear Regression}
+
+    Matrix expression for multiple linear regression,
+
+    \begin{equation}
+        Y_i = \beta_0 + \beta_1 x_{i, 1} + \dots + \beta_p x_{i, p - 1} + \epsilon_i, i = 1\dots n
+    \end{equation}
+
+    $\epsilon_i$ has the same assumptions as simple linear regression.
+
+    Multiple linear regression can be expressed as
+
+    \begin{equation} \label{multiple linear regression model}
+        Y = X \beta + \epsilon
+    \end{equation}
+
+    Given
+
+    \begin{align}
+        \label{Multiple Regression X}
+        X     & = \left[\begin{matrix}
+                1     & x_{1,1} & \dots & x_{1, p - 1} \\
+                1     & x_{2,1} & \dots & x_{2, p - 1} \\
+                \dots & \dots   & \dots & \dots        \\
+                1     & x_{n,1} & \dots & x_{n, p - 1} \\
+            \end{matrix}\right]  \\
+        \beta & = \left[\begin{matrix}
+                \beta_0 \\ \beta_1 \\ \dots \\ \beta_{p - 1}
+            \end{matrix}\right],
+        Y = \left[\begin{matrix}
+                Y_1 \\ Y_2 \\ \dots \\ Y_n
+            \end{matrix}\right],
+        \epsilon = \left[\begin{matrix}
+                \epsilon_1 \\ \epsilon_2 \\ \dots \\ \epsilon_n
+            \end{matrix}\right]
+    \end{align}
+
+    \textbf{LS Estimate}
+
+    Find $\beta$ that minimizes $|Y - X \beta|^2$, where for a vector $v = (v_1 \dots v_n)', |v|^2 = \Sigma_{i = 1}^n v^2_i$, the solution is given by
+
+    \begin{equation}\label{LS multiple linear regression}
+        \hat\beta = \left[\begin{matrix}
+                \hat\beta_0 \\ \hat\beta_1 \\ \dots \\ \hat\beta_{p - 1}
+            \end{matrix}\right]
+        = (X'X)^{-1} X'Y
+    \end{equation}
+
+    This can be computed in R. Given an $n * p$ matrix, X.
+
+    \begin{enumerate}
+        \item Manual
+              \begin{itemize}
+                  \item $\hat\beta$ = \verb|solve(t(X) %*% X) %*% (t(X) %*% Y)|
+                  \item \verb|%*%| denotes the matrix product.
+              \end{itemize}
+        \item Using built in functions
+              \begin{itemize}
+                  \item \verb|result = lsfit(X, Y, intercept = F)|
+                  \item \verb|bhat = result$coef|
+              \end{itemize}
+    \end{enumerate}
+
+    \subsection{ANOVA Table}
+
+    \begin{align} \label{Sum Squares MLR}
+        SSTO & = \Sigma^n_{i = 1} (Y_i - \bar Y)^2      \\
+        SSR  & = \Sigma^n_{i = 1} (\hat Y_i - \bar Y)^2 \\
+        SSE  & = \Sigma^n_{i = 1} (Y_i - \hat Y_i)^2    \\
+        MSR  & = \frac{SSR}{(p - 1)}                    \\
+        MSE  & = \frac{SSE}{(n - p)}                    \\
+        F    & = \frac{MSR}{MSE}
+    \end{align}
+
+    Where $\hat Y_i = (\ref{multiple linear regression model})$
+
+    \begin{center}
+        \begin{tabular}{l l l l l}
+            Source     & SS   & df      & MS    & F   \\ \hline
+            Regression & SSR  & $p - 1$ & $MSR$ & $F$ \\
+            Error      & SSE  & $n - p$ & $MSE$ &     \\
+            Total      & SSTO & $n - 1$ &       &     \\
+        \end{tabular}
+    \end{center}
+
+    Under $H_0: \beta_1 = \dots = \beta_{p - 1} = 0$, $F \sim F_{p - 1, n - p}$
+
+    $R^2$ has the same interpretation as in SLR.
+
+    \subsection{Inference about Regression Parameters}
+
+    \textbf{Step 1}
+
+    $H_0: \beta_k = \beta_{k0}$
+
+    $H_1: \beta_k \ne \beta_{k0} (> \beta_{k0}, < \beta_{k0})$ where $\beta_{k0}$ is a specified value (e.g. 0).
+
+    \begin{align}
+        t               & = \frac{ \hat\beta_k - \beta_{k0} }{ se(\hat\beta_k) } \\
+        se(\hat\beta_k) & = \sqrt{MSE * (X'X)^{-1}_{k,k}}
+    \end{align}
+
+    Where $(X'X)^{-1}_{k,k}$ is the kth diagonal element of $(X'X)^{-1}$.
+    $(0 \leq k \leq p - 1)$
+
+    Under $H_0, t \sim t_{n - p}$
+
+    \textbf{Step 2}
+
+    A $100(1 - \alpha)\%$ sci for $\beta_h, h \in G$ with $g = |G|$
+
+    \begin{align}
+        \hat\beta_h & = B * se(\hat\beta_h)                            \\
+        B           & = t_{n - p} \left( 1 - \frac{\alpha}{2g} \right)
+    \end{align}
+
+    \subsection{Estimation of Mean Responses}
+
+    \begin{equation}
+        E(Y_h) = x'_h \beta = \beta_0 + \beta_1 x_{h,1} + \dots + \beta_{p - 1} x_{h, p-1}
+    \end{equation}
+
+    First compute $\hat Y_h = x'_h \hat\beta$ and
+
+    \begin{equation}
+        se(\hat Y_h) = \sqrt{MSE( x'_h (X'X)^{-1} x_h )}
+    \end{equation}
+
+    A $100(1 - \alpha)\%$ sci for $E(Y_h), h \in G, g = |G|$ is
+
+    \begin{align}
+         & W-H:   & \hat Y_h \pm W * se(\hat Y_h), & W = \sqrt{p * F_{p,n-p} (1-\alpha) }             \\
+         & Bonf.: & \hat Y_h \pm B * se(\hat Y_h), & B = t_{n - p} \left(1 - \frac{\alpha}{2g}\right)
+    \end{align}
+
+    \subsection{Prediction Interval}
+
+    \begin{equation}
+        pse(\hat Y_h) = \sqrt{MSE (1 + x'_h (X'X)^{-1} x_h)}
+    \end{equation}
+
+    A $100(1 - \alpha)\%$ spi for $Y_h$
+
+    \begin{align}
+         & Scheffe: & \hat Y_h \pm S*pse(\hat Y_h), & S = \sqrt{g*F_{g,n-p} (1 - \alpha)}            \\
+         & Bonfer:  & \hat Y_h \pm B*pse(\hat Y_h), & B = t_{n-p} \left(1 - \frac{\alpha}{2g}\right)
+    \end{align}
+
+    \subsection{Multiple Predictor SS}
+
+    \begin{align*}
+        SSR(x_2 | x_1)      & = SSR(x_1, x_2) - SSR(x_1)           \\
+                            & = SSE(x_1) - SSE(x_1, x_2)           \\
+        SSR(x_3 | x_1, x_2) & = SSR(x_1, x_2, x_3) - SSR(x_1, x_2) \\
+                            & = SSE(x_1, x_2) - SSE(x_1, x_2, x_3)
+    \end{align*}
+
+    SSR has (number of predictors on the left of the bars) degrees of freedom.
+
+    \subsection{ANOVA with extra SS}
+
+    \begin{center}
+        \begin{tabular}{l l l}
+            Source         & SS                  & df      \\ \hline
+            Regression     & $SSR(x_1,x_2,x_3)$  & $3$     \\
+            $x_1$          & $SSR(x_1)$          & 1       \\
+            $x_2|x_1$      & $SSR(x_2|x_1)$      & 1       \\
+            $x_3|x_1, x_2$ & $SSR(x_3|x_1, x_2)$ & 1       \\
+            Error          & $SSE(x_1,x_2,x_3)$  & $n - 4$ \\
+            Total          & SSTO                & $n - 1$ \\
+        \end{tabular}
+    \end{center}
+
+    \begin{center}
+        \begin{tabular}{l l}
+            Source         & MS                                                   \\ \hline
+            Regression     & $MSR$                                                \\
+            $x_1$          & $MSR(x_1) = SSR(x_1)/1$                              \\
+            $x_2|x_1$      & $MSR(x_2|x_1) = SSR(x_2|x_1)/1$                      \\
+            $x_3|x_1, x_2$ & $MSR(x_3|x_1,x_2) = SSR(x_3|x_1,x_2)/1$              \\
+            Error          & $MSE(x_1, x_2,x_3) = \frac{SSE(x_1,x_2,x_3)}{(n-4)}$ \\
+            Total          &                                                      \\
+        \end{tabular}
+    \end{center}
+
+    \subsection{F Test for predictors}
+
+    $H_0: \beta_3 = 0$
+
+    $H_1: \beta_3 \ne 0$
+
+    $SSE(Full) = SSE(x_1, x_2, x_3)$
+
+    $SSE(Reduced) = SSE(x_2, x_2)$
+
+    \begin{align}
+        F & = \frac{SSR(R) - SSR(F)/(df_R - df_F)}{SSR(F)/df_F} \\
+        F & = \frac{MSR(x_3 | x_1, x_2)}{MSE(x_1, x_2, x_3)}
+    \end{align}
+    
+    $df_R = n - 3, df_F = n - 4$ 
+
+    Under $H_0, F \sim F_{1, n-4}$
+
+    \subsection{Coefficient of Partial Determination}
+    
+    \begin{equation}
+        R^2_{Y,x_2|x_1} = R^2_{Y,2|1} = \frac{SSR(x_2|x_1)}{SSE(x_1)} = 1 - \frac{SSE(x_1,x_2)}{SSE(x_1}
+    \end{equation}
+
+    It measures the proportionate reduction in the variation of $Y$ due to adding $x_2$, given that $x_1$ is already in the model.
+
+    \textbf{More generally}
+
+    \begin{equation}
+        R^2_{Y,x_p, \dots, x_{p+q-1} | x_1, \dots, x_{p-1}} = 1 - \frac{SSE(x_1,\dots,x_{p+1-1})}{SSE(x_1,\dots,x_{p-1})}
+    \end{equation}
+
+    \subsection{Adjusted R}
+
+    \begin{align}
+        R^2 & = 1 - \frac{SSE}{SSTO} \\
+        R^2_a & = 1 - \frac{MSE}{MSTO} = \frac{SSE/(n-p)}{SSTO/(n-1)}
+    \end{align}
+
+    Models with more predictors will always have higher $R^2$, but $R^2_a$ takes into account the number of predictors. Select the model that maximizes $R^2_a$.
+
+    \subsection{Mallow's C}
+
+    \begin{equation}
+        C_p = C_p(x_{i_1}, \dots, x_{i_{p-1}}) = \frac{SSE(x_{i_1}, \dots, x_{i_{p-1}})}{MSE(x_1, \dots, x_{K-1})} - (n - 2p)
+    \end{equation}
+
+    where $SSE(x_{i_1}, \dots, x_{i_{p-1}}) = SSE$ of fitting the regression with $x_{i_1}, \dots, x_{i_{p-1}}$ and
+    $MSE(x_1, \dots, x_{K-1}) = MSE$ of fitting the regression with all candidate predictors.
+
+    The best subset of predictors corresponds to the one such that $C_p$ is small and close to $p$. Note: $C_p = K$.
+
+    \subsection{AIC and BIC(SBC) criteria}
+
+    \begin{align}
+        AIC_p & = n \log(SSE_p \ n) + 2p \\
+        SBC_p & = n \log(SSE_p \ n) + (\log n)p
+    \end{align}
+
+    Choose a subset of predictors (model) that minimizes $AIC_p(SBC_p)$.
+
+    \subsection{Forward Stepwise Selection}
+
+    \begin{enumerate}
+        \item Choose the first predictor $(x_1)$ that has the largest $|t|$ for the slope under a simple linear regression with the predictor.
+        \item Choose the second predictor $x(2)$ that has the largest $|t|$ for the coefficient under a linear regression with $(x_1)$ and a new predictor.
+        \item Continue until the p-value of the new predictor is greater than $0.10$.
+        \item After adding new predictors, check existing predictor p-values. If any are greater than $0.15$, remove them from the model.
+    \end{enumerate}
+
+    \subsection{Conditional residual plots}
+
+    $e(Y|x_2)$ = residual of fitting $Y$ against $x_2$.
+
+    $e(x_1|x_2)$ = residual of fitting $x_1$ against $x_2$.
+
+    A linear pattern in the plot of $e(Y|x_1)$ against $e(x_2|x_1)$ suggest that an important predictor, $x_2$, is missing in the model.
+
+    \subsection{Identifying outlying Y observations}
+
+    \hlDef{Internally Studentized (Standardized) residual:}  Let $\hat\epsilon_i$ denote the residual, the studentized residual is,
+
+    \begin{equation}
+        r_i = \frac{\hat\epsilon_i}{se(\hat\epsilon_i)} = \frac{\hat\epsilon_i}{\sqrt(MSE(1-h_{ii}))}
+    \end{equation}
+
+    The motivation for studentizing is that the variance of residuals for different inputs may differ, even if the variances of the errors are equal.
+    
+    where $h_{ii}$ is the $ith$ diagonal element of the hat matrix $H = X(X' X)^{-1} X'$, also called the \hlDef{leverage} for the $ith$ case.
+
+    \hlDef{deleted (jackknife) residual:} Fit the regression with the $ith$ case deleted; let $\hat Y_{i(-i)}$ denote the predicted value for $Y_i$, under this regression.
+    The idea behind the deleted residual is that an influential data point $i$, pulls the regression line torwards itself. By removing that data point, the line should bounce back away from the original response, resulting in a large deleted residual.
+    
+    The deleted residual is,
+    \begin{equation}
+        d_i = Y_i - \hat Y_{-(-i)}
+    \end{equation}
+
+
+    \hlDef{studentized deleted (externally studentized) residual}.
+
+    \begin{align}
+        t_i & = \frac{d_i}{se(d_i)} = r_i \left(\frac{n - k - 2}{n - k - 1 - r_i^2}\right)^{1/2}\\
+        se(d_i) & = \sqrt{\frac{MSE_i}{1 - h_{ii}}} \\
+        MSE_i & = \frac{(1-h_{ii} SSE - \hat\epsilon_i^2)}{(n - p - 1) (1 - h_{ii})}  \\
+        & = \frac{n-p}{n-p-1} MSE - \frac{\hat\epsilon^2}{(n-p-1)(1-h_{ii})}
+    \end{align}
+
+    Under the null hypothesis $H_0:$ no outliers, $t_i \sim t_{n-p-1}$.
+
+    \subsection{Bonferonni's method for obtaining critical value for studentized deleted residuals}
+
+    Decision Rule: Reject $H_0:$ no outliers, if 
+
+    \begin{equation}
+        \max_{1 \leq i \leq n} |t_i| > t_{n - p - 1} (1 - \frac{\alpha}{2n})        
+    \end{equation}
+
+    where $p$ is the number of $\beta$'s 
+
+    \begin{enumerate}
+        \item Calculate critical value $t_{n - p - 1} (1 - \frac{\alpha}{2n})$.
+        \item Calculate all studentized residuals $t_i$.
+        \item Get max of absolute value $\max_{1 \leq i \leq n} |t_i|$ if residuals.
+        \item If $\max |t_i| < t^*$, fail to reject $H_0$ and conclude no outliers.
+    \end{enumerate}
+
+    \subsection{Identifying outlier x observations}
+
+    Recall $h_{ii}$ is the $ith$ diagonal element of the hat matrix $H=Px$, which is called the leverage for the $ith$ case.
+
+    A property: 
+    \begin{equation}
+        \Sigma^n_{i=1} h_{ii} = p     
+    \end{equation}
+
+    If $h_{ii} > 2h = \frac{2p}{n}$, case $i$ is considered outlying in x.
+
+    \subsection{Identifying influential cases}
+
+    An outlying case isn't necessarily influential, to identify influential cases, consider \hlDef{Cook's Distance}.
+
+    \begin{equation}
+        D = \frac{ \Sigma^n_{j=1} (\hat Y_j - \hat Y_{j(-i)})^2 }{p * MSE}
+    \end{equation}
+
+    where $\hat Y_j$ is the predicted value of $Y_j$ via regression with the full data, and $\hat Y_{j(-i)}$ is the predicted value of $Y_j$ via regression with the data without the $ith$ case.
+    
+    Large values of $D_i$ indicate a potentially influential case.
+
+    Another more computationally convenient expression is,
+
+    \begin{equation}
+        D_i = \frac{h_{ii} \hat\epsilon_i^2}{ p (1 - h_{ii})^2 MSE}
+    \end{equation}
+
+\end{multicols}
+\end{document}
